@@ -2,6 +2,7 @@ package com.example.cleanarq.application.usecase;
 
 import com.example.cleanarq.domain.port.ReminderRepository;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 public class DeleteReminderUseCase {
@@ -11,8 +12,9 @@ public class DeleteReminderUseCase {
         this.reminderRepository = reminderRepository;
     }
 
-    public void execute(String id) {
-        reminderRepository.delete(id);
-        System.out.println("Recordatorio eliminado: " + id);
+    public Mono<Void> execute(String id) {
+        return reminderRepository.delete(id)
+                .doOnSuccess(v -> System.out.println("Reminder deleted successfully: " + id))
+                .doOnError(e -> System.err.println("Error deleting reminder: " + e.getMessage()));
     }
 }

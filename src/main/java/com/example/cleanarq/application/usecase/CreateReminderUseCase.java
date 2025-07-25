@@ -3,8 +3,9 @@ package com.example.cleanarq.application.usecase;
 import com.example.cleanarq.domain.model.Reminder;
 import com.example.cleanarq.domain.port.ReminderRepository;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
-@Service
+@Service // Para que Spring lo detecte y pueda inyectarlo
 public class CreateReminderUseCase {
     private final ReminderRepository reminderRepository;
 
@@ -12,13 +13,14 @@ public class CreateReminderUseCase {
         this.reminderRepository = reminderRepository;
     }
 
-    public void execute(String id, String message, long timestamp, String userSubscriptionPlan) {
+    public Mono<Reminder> execute(String id, String message, long timestamp, String userSubscriptionPlan) {
         Reminder newReminder = new Reminder(id, message, timestamp, userSubscriptionPlan);
         if (newReminder.canCreateReminder()) {
-            reminderRepository.save(newReminder);
-            System.out.println("Reminder created: " + message);
+            return reminderRepository.save(newReminder)
+                    .doOnSuccess(r -> System.out.println("Reminder created successfully: " + r.getMessage()))
+                    .doOnError(e -> System.err.println("Error creating reminder: " + e.getMessage()));
         } else {
-            System.out.println("Couldn't create reminder. Invalid user subscription plan.");
+            return Mono.error(new IllegalArgumentException("Subscription plan not valid for creating reminders."));
         }
     }
 }

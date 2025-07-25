@@ -3,6 +3,7 @@ package com.example.cleanarq.application.usecase;
 import com.example.cleanarq.domain.model.Reminder;
 import com.example.cleanarq.domain.port.ReminderRepository;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 public class GetReminderUseCase {
@@ -12,7 +13,7 @@ public class GetReminderUseCase {
         this.reminderRepository = reminderRepository;
     }
 
-    public Reminder execute(String id) {
+    public Mono<Reminder> execute(String id) {
         return reminderRepository.findById(id);
     }
 }
