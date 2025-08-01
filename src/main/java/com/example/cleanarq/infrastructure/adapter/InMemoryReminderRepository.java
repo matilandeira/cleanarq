@@ -9,7 +9,7 @@ import reactor.core.publisher.Flux;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component // Para que Spring lo detecte y pueda inyectarlo
+@Component
 public class InMemoryReminderRepository implements ReminderRepository {
     private final Map<String, Reminder> reminders = new ConcurrentHashMap<>();
 
